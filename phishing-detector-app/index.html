@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phishing URL Detection App - Tahir Abdulazeez</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="description" content="Phishing URL Detection App by Tahir Abdulazeez, showcasing cybersecurity and AI skills">
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    function PhishingDetector() {
+      const [url, setUrl] = React.useState('');
+      const [result, setResult] = React.useState(null);
+      const [loading, setLoading] = React.useState(false);
+
+      const checkPhishing = (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setTimeout(() => {
+          // Rule-based phishing detection logic
+          let score = 0;
+          const suspiciousKeywords = ['login', 'verify', 'secure', 'account', 'password'];
+          const urlLower = url.toLowerCase();
+          const domainLength = urlLower.split('/')[2]?.length || 0;
+          
+          // Rules based on CEH principles
+          if (domainLength > 30) score += 30; // Long domains are suspicious
+          if (!url.startsWith('https://')) score += 20; // Non-HTTPS
+          if (suspiciousKeywords.some(keyword => urlLower.includes(keyword))) score += 30;
+          if (url.match(/[\d]{4,}/)) score += 20; // Numbers in domain
+
+          const isPhishing = score > 50;
+          setResult({
+            isPhishing,
+            message: isPhishing 
+              ? 'Warning: This URL may be a phishing attempt!'
+              : 'This URL appears safe.',
+            details: [
+              `Domain length: ${domainLength} characters (${domainLength > 30 ? 'Suspicious' : 'Normal'})`,
+              `HTTPS: ${url.startsWith('https://') ? 'Present' : 'Missing'}`,
+              `Suspicious keywords: ${suspiciousKeywords.some(keyword => urlLower.includes(keyword)) ? 'Found' : 'None'}`,
+            ],
+          });
+          setLoading(false);
+        }, 1000); // Simulate processing
+      };
+
+      return (
+        <div className="min-h-screen bg-gray-100 font-sans">
+          {/* Navbar */}
+          <nav className="bg-blue-600 text-white p-4 sticky top-0 shadow-md">
+            <div className="container mx-auto flex justify-between items-center">
+              <h1 className="text-xl font-bold">Phishing URL Detector</h1>
+              <div className="space-x-4">
+                <a href="https://[YourGitHubUsername].github.io/portfolio-website" className="hover:text-gray-200">Portfolio</a>
+                <a href="https://github.com/[YourGitHubUsername]" className="hover:text-gray-200">GitHub</a>
+              </div>
+            </div>
+          </nav>
+
+          {/* Hero Section */}
+          <section className="bg-blue-500 text-white py-20 text-center">
+            <div className="container mx-auto">
+              <h2 className="text-4xl font-bold mb-4">Phishing URL Detection App</h2>
+              <p className="text-xl mb-6">By Tahir Abdulazeez, Cybersecurity Engineer</p>
+              <p className="text-lg max-w-2xl mx-auto">
+                Enter a URL to check for phishing risks using a rule-based detection engine, built with React and Tailwind CSS.
+              </p>
+            </div>
+          </section>
+
+          {/* URL Input and Results */}
+          <section className="py-16 bg-white">
+            <div className="container mx-auto text-center">
+              <h2 className="text-3xl font-bold mb-8">Check a URL</h2>
+              <form onSubmit={checkPhishing} className="max-w-lg mx-auto">
+                <input
+                  type="text"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  placeholder="Enter URL (e.g., https://example.com)"
+                  className="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  required
+                />
+                <button
+                  type="submit"
+                  className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400"
+                  disabled={loading}
+                >
+                  {loading ? 'Checking...' : 'Check URL'}
+                </button>
+              </form>
+              {result && (
+                <div className="mt-8 max-w-lg mx-auto bg-gray-100 p-6 rounded-lg shadow-md">
+                  <h3 className={`text-xl font-semibold mb-2 ${result.isPhishing ? 'text-red-600' : 'text-green-600'}`}>
+                    {result.message}
+                  </h3>
+                  <ul className="text-left text-gray-700">
+                    {result.details.map((detail, index) => (
+                      <li key={index} className="mb-1">• {detail}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* About Section */}
+          <section className="py-16 bg-gray-100">
+            <div className="container mx-auto text-center">
+              <h2 className="text-3xl font-bold mb-8">About This App</h2>s
+              <p className="text-lg max-w-2xl mx-auto text-gray-700">
+                Built by Tahir Abdulazeez (B.Sc. Cyber Security), this app uses a rule-based engine to detect phishing URLs, leveraging CEH and CCNA expertise. It’s part of my portfolio showcasing secure, AI-driven solutions.
+              </p>
+              <a href="https://github.com/[YourGitHubUsername]/phishing-detector" target="_blank" className="mt-4 inline-block text-blue-600 hover:underline">
+                View Source Code
+              </a>
+            </div>
+          </section>
+
+          {/* Footer */}
+          <footer className="bg-blue-600 text-white text-center py-4">
+            <p>&copy; 2025 Tahir Abdulazeez. All rights reserved.</p>
+          </footer>
+        </div>
+      );
+    }
+
+    ReactDOM.render(<PhishingDetector />, document.getElementById('root'));
+  </script>
+</body>
+</html>
